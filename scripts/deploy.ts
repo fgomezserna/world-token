@@ -14,9 +14,9 @@ export async function main() {
     await worldToken.deployed();
 
     // Desplegar VestingContract
-    const VestingContract = await ethers.getContractFactory("VestingContract");
-    const vestingContract = await VestingContract.connect(deployer).deploy(worldToken.address);
-    await vestingContract.deployed();
+  //  const VestingContract = await ethers.getContractFactory("VestingContract");
+  //  const vestingContract = await VestingContract.connect(deployer).deploy(worldToken.address);
+  //  await vestingContract.deployed();
 
     // Mostrar las direcciones de los contratos
     // Mostrar la dirección de quien despliega el contrato
@@ -24,7 +24,7 @@ export async function main() {
 
     
     console.log("Dirección de WorldToken: ", worldToken.address);
-    console.log("Dirección de VestingContract: ", vestingContract.address);
+  //  console.log("Dirección de VestingContract: ", vestingContract.address);
   
     // Añadir VestingContract como minter de WorldToken
     // Mostrar el rol que tiene deployer en WorldToken

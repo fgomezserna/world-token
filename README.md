@@ -1,7 +1,7 @@
 ```bash
 npx hardhat deploy --network [network]
 
-npx hardhat verify --network [network] [token_address] WorldToken WORLD
+npx hardhat verify --network polygon [token_address] WorldToken WORLD
 npx hardhat verify --network [network] [vesting_address] [token_address]
 
 # añadimos un vesting
@@ -14,8 +14,8 @@ npx hardhat releaseVesting --contratovesting [vesting_address] --wallet [address
 npx hardhat printVesting --contratovesting [vesting_address] --wallet [address] --network [network]
 
 # bloqueamos un vesting
-npx hardhat blockVesting --contratovesting [vesting_address] --wallet [address] --num 1 --network [network] 
+npx hardhat blockVesting --contratovesting [vesting_address] --wallet [address] --num 1 --network [network]
 
 # desbloqueamos un vesting
-npx hardhat unblockVesting --contratovesting [vesting_address] --wallet [address] --num 1 --network [network] 
+npx hardhat unblockVesting --contratovesting [vesting_address] --wallet [address] --num 1 --network [network]
 ```

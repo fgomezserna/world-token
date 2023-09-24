@@ -5,6 +5,7 @@ coverage.json
 typechain
 typechain-types
 tests-back
+.DS_Store
 
 # Hardhat files
 cache

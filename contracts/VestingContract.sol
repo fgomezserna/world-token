@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./IMintableERC20.sol";
 import "hardhat/console.sol";
@@ -13,7 +14,7 @@ import "hardhat/console.sol";
  * @title VestingContract
  * @notice This is a simple vesting contract that allows to create vesting schedules for a beneficiary with daily/weekly/monthly and/or cliff unlocking.
  */
-contract VestingContract {
+contract VestingContract is Ownable {
     using SafeERC20 for IERC20;
 
     /**
@@ -68,9 +69,25 @@ contract VestingContract {
     event TokensReleased(address indexed beneficiary, uint256 amount);
 
     /**
+     * @notice Emitted when a vesting schedule is blocked
+     * @param beneficiary The address of the beneficiary
+     * @param scheduleIndex The index of the schedule
+     */
+    event VestingScheduleBlocked(address indexed beneficiary, uint256 scheduleIndex);
+
+    /**
+     * @notice Emitted when a vesting schedule is unblocked
+     * @param beneficiary The address of the beneficiary
+     * @param scheduleIndex The index of the schedule
+     */
+    event VestingScheduleUnblocked(address indexed beneficiary, uint256 scheduleIndex);
+
+
+    /**
      * @param _token The token to be vested
      */
     constructor(IMintableERC20 _token) {
+
         token = _token;
     }
 
@@ -89,7 +106,7 @@ contract VestingContract {
         uint256 _duration,
         DurationUnits _durationUnits,
         uint256 _amountTotal
-    ) external {
+    ) external onlyOwner {
         // perform input checks
         require(_beneficiary != address(0), "VestingContract: beneficiary is the zero address");
         require(_amountTotal > 0, "VestingContract: amount is 0");
@@ -113,9 +130,9 @@ contract VestingContract {
 
     /**
      * @notice Releases the vested tokens for a beneficiary
-     * @param _beneficiary The address of the beneficiary
      */
-    function release(address _beneficiary) external {
+    function release() external {
+        address _beneficiary = msg.sender;
         VestingSchedule[] storage schedules = vestingSchedules[_beneficiary];
         uint256 schedulesLength = schedules.length;
         require(schedulesLength > 0, "VestingContract: no vesting schedules for beneficiary");
@@ -201,13 +218,25 @@ contract VestingContract {
         return vestingSchedules[_beneficiary].length;
     }
 
-    // funcion para blockar un schedule
-    function blockSchedule(address _beneficiary, uint256 _scheduleIndex) external {
+  
+    /**
+     * @notice Blocks a vesting schedule
+     * @param _beneficiary The address of the beneficiary
+     * @param _scheduleIndex The index of the schedule
+     */
+    function blockVestingSchedule(address _beneficiary, uint256 _scheduleIndex) external onlyOwner {
+        require(_scheduleIndex < vestingSchedules[_beneficiary].length, "VestingContract: invalid schedule index");
         vestingSchedules[_beneficiary][_scheduleIndex].block = true;
+        emit VestingScheduleBlocked(_beneficiary, _scheduleIndex);
     }
-
-    // funcion para desbloquear un schedule
-    function unblockSchedule(address _beneficiary, uint256 _scheduleIndex) external {
+    /**
+     * @notice Unblocks a vesting schedule
+     * @param _beneficiary The address of the beneficiary
+     * @param _scheduleIndex The index of the schedule
+     */
+    function unblockVestingSchedule(address _beneficiary, uint256 _scheduleIndex) external onlyOwner {
+        require(_scheduleIndex < vestingSchedules[_beneficiary].length, "VestingContract: invalid schedule index");
         vestingSchedules[_beneficiary][_scheduleIndex].block = false;
+        emit VestingScheduleUnblocked(_beneficiary, _scheduleIndex);
     }
 }

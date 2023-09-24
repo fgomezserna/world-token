@@ -47,6 +47,7 @@ export async function main(taskArgs: any) {
     console.log("Esperado para liberar: ", release);
     
     const releaseTx = await vestingContract.release(wallet);
+    console.log("Tx hash: ", releaseTx.hash);
     await releaseTx.wait(); // Esperar a que la transacción sea minada
 
     const balanceFinal = await worldToken.balanceOf(wallet);
