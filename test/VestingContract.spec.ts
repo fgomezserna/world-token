@@ -15,7 +15,7 @@ enum DurationUnits {
 }
 
 function floorToken(wei: BigNumber) {
-  Math.floor(parseFloat(ethers.utils.formatEther(wei)))
+  return Math.floor(parseFloat(ethers.utils.formatEther(wei)))
 }
 
 describe("VestingContract", () => {
@@ -59,6 +59,12 @@ describe("VestingContract", () => {
     });
 
     describe("createVestingSchedule", () => {
+        it("should revert when not called from owner", async () => {
+            await expect(
+                vesting.connect(teamWallet).createVestingSchedule(teamWallet.address, startTime, duration, DurationUnits.Months, amountToLock)
+            ).to.be.revertedWith("Ownable: caller is not the owner")
+        })
+
         it("should rever if beneficiary is zero address", async () => {
             await expect(
                 vesting.createVestingSchedule(ethers.constants.AddressZero, startTime, duration, DurationUnits.Months, amountToLock),
@@ -216,5 +222,21 @@ describe("VestingContract", () => {
         });
 
       
+    });
+
+    describe("blockVestingSchedule", () => {
+      it("should revert when not called from owner", async () => {
+        await expect(
+          vesting.connect(teamWallet).blockVestingSchedule(teamWallet.address, 0)
+        ).to.be.revertedWith("Ownable: caller is not the owner")
+      })
+    });
+
+    describe("unblockVestingSchedule", () => {
+      it("should revert when not called from owner", async () => {
+        await expect(
+          vesting.connect(teamWallet).unblockVestingSchedule(teamWallet.address, 0)
+        ).to.be.revertedWith("Ownable: caller is not the owner")
+      })
     });
 });
