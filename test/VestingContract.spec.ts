@@ -167,7 +167,7 @@ describe("VestingContract", () => {
 
             
 
-            await vesting.release(teamWallet.address);
+            await vesting.connect(teamWallet).release();
 
             const schedule = await vesting.vestingSchedules(teamWallet.address, 0);
             const releasedAmount = schedule.released;
@@ -179,7 +179,7 @@ describe("VestingContract", () => {
 
     describe("release", () => {
         it("should rever it beneficiary has no vesting schedules", async () => {
-            await expect(vesting.release(teamWallet.address)).to.be.revertedWith(
+            await expect(vesting.connect(teamWallet).release()).to.be.revertedWith(
                 "VestingContract: no vesting schedules for beneficiary",
             );
         });
@@ -189,7 +189,7 @@ describe("VestingContract", () => {
 
             const balanceBefore = await token.balanceOf(teamWallet.address);
 
-            await vesting.release(teamWallet.address)
+            await vesting.connect(teamWallet).release()
 
             const balanceAfter = await token.balanceOf(teamWallet.address);
 
