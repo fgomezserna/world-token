@@ -2,6 +2,7 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
+import { BigNumber } from "ethers"
 
 import { MockERC20, VestingContract } from "../typechain-types";
 
@@ -11,6 +12,10 @@ enum DurationUnits {
     Days,
     Weeks,
     Months
+}
+
+function floorToken(wei: BigNumber) {
+  Math.floor(parseFloat(ethers.utils.formatEther(wei)))
 }
 
 describe("VestingContract", () => {
@@ -163,6 +168,7 @@ describe("VestingContract", () => {
             const releasableAmountBefore = await vesting.releasableAmount(
                 await vesting.vestingSchedules(teamWallet.address, 0),
             );
+            expect(floorToken(releasableAmountBefore)).to.equal(0)
             await increaseTime(60 * 60 * 24 * 30);
 
             
@@ -171,9 +177,11 @@ describe("VestingContract", () => {
 
             const schedule = await vesting.vestingSchedules(teamWallet.address, 0);
             const releasedAmount = schedule.released;
+            const expectedReleasedAmount = amountToLock.div(duration)
+            expect(floorToken(releasedAmount)).to.equal(floorToken(expectedReleasedAmount))
 
             const releasableAmountAfter = await vesting.releasableAmount(schedule);
-
+            expect(releasableAmountAfter).to.equal(0)
         });
     });
 
