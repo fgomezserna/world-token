@@ -2,6 +2,7 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
+import { BigNumber } from "ethers"
 
 import { MockERC20, VestingContract } from "../typechain-types";
 
@@ -11,6 +12,10 @@ enum DurationUnits {
     Days,
     Weeks,
     Months
+}
+
+function floorToken(wei: BigNumber) {
+  return Math.floor(parseFloat(ethers.utils.formatEther(wei)))
 }
 
 describe("VestingContract", () => {
@@ -54,6 +59,12 @@ describe("VestingContract", () => {
     });
 
     describe("createVestingSchedule", () => {
+        it("should revert when not called from owner", async () => {
+            await expect(
+                vesting.connect(teamWallet).createVestingSchedule(teamWallet.address, startTime, duration, DurationUnits.Months, amountToLock)
+            ).to.be.revertedWith("Ownable: caller is not the owner")
+        })
+
         it("should rever if beneficiary is zero address", async () => {
             await expect(
                 vesting.createVestingSchedule(ethers.constants.AddressZero, startTime, duration, DurationUnits.Months, amountToLock),
@@ -163,23 +174,26 @@ describe("VestingContract", () => {
             const releasableAmountBefore = await vesting.releasableAmount(
                 await vesting.vestingSchedules(teamWallet.address, 0),
             );
+            expect(floorToken(releasableAmountBefore)).to.equal(0)
             await increaseTime(60 * 60 * 24 * 30);
 
             
 
-            await vesting.release(teamWallet.address);
+            await vesting.connect(teamWallet).release();
 
             const schedule = await vesting.vestingSchedules(teamWallet.address, 0);
             const releasedAmount = schedule.released;
+            const expectedReleasedAmount = amountToLock.div(duration)
+            expect(floorToken(releasedAmount)).to.equal(floorToken(expectedReleasedAmount))
 
             const releasableAmountAfter = await vesting.releasableAmount(schedule);
-
+            expect(releasableAmountAfter).to.equal(0)
         });
     });
 
     describe("release", () => {
         it("should rever it beneficiary has no vesting schedules", async () => {
-            await expect(vesting.release(teamWallet.address)).to.be.revertedWith(
+            await expect(vesting.connect(teamWallet).release()).to.be.revertedWith(
                 "VestingContract: no vesting schedules for beneficiary",
             );
         });
@@ -189,7 +203,7 @@ describe("VestingContract", () => {
 
             const balanceBefore = await token.balanceOf(teamWallet.address);
 
-            await vesting.release(teamWallet.address)
+            await vesting.connect(teamWallet).release()
 
             const balanceAfter = await token.balanceOf(teamWallet.address);
 
@@ -208,5 +222,21 @@ describe("VestingContract", () => {
         });
 
       
+    });
+
+    describe("blockVestingSchedule", () => {
+      it("should revert when not called from owner", async () => {
+        await expect(
+          vesting.connect(teamWallet).blockVestingSchedule(teamWallet.address, 0)
+        ).to.be.revertedWith("Ownable: caller is not the owner")
+      })
+    });
+
+    describe("unblockVestingSchedule", () => {
+      it("should revert when not called from owner", async () => {
+        await expect(
+          vesting.connect(teamWallet).unblockVestingSchedule(teamWallet.address, 0)
+        ).to.be.revertedWith("Ownable: caller is not the owner")
+      })
     });
 });
