@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.16;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./IMintableERC20.sol";
-import "hardhat/console.sol";
 
 
 /**
@@ -42,7 +41,7 @@ contract VestingContract is Ownable {
         // amount of tokens released
         uint256 released;
         // block vesting
-        bool block;
+        bool blocked;
     }
 
     /**
@@ -121,7 +120,7 @@ contract VestingContract is Ownable {
                 durationUnits: _durationUnits,
                 amountTotal: _amountTotal,
                 released: 0,
-                block: false
+                blocked: false
             })
         );
 
@@ -141,7 +140,7 @@ contract VestingContract is Ownable {
 
         for (uint256 i = 0; i < schedulesLength; i++) {
             VestingSchedule storage schedule = schedules[i];
-            if(schedules[i].block) continue;
+            if(schedules[i].blocked) continue;
 
             // calculate the releasable amount
             uint256 amountToSend = releasableAmount(schedule);
@@ -168,7 +167,7 @@ contract VestingContract is Ownable {
 
         uint256 amountToSend = 0;
         for (uint256 i = 0; i < schedules.length; i++) {
-            if(schedules[i].block) continue;
+            if(schedules[i].blocked) continue;
             VestingSchedule memory schedule = vestingSchedules[_beneficiary][i];
             amountToSend += releasableAmount(schedule);
         }
@@ -226,7 +225,7 @@ contract VestingContract is Ownable {
      */
     function blockVestingSchedule(address _beneficiary, uint256 _scheduleIndex) external onlyOwner {
         require(_scheduleIndex < vestingSchedules[_beneficiary].length, "VestingContract: invalid schedule index");
-        vestingSchedules[_beneficiary][_scheduleIndex].block = true;
+        vestingSchedules[_beneficiary][_scheduleIndex].blocked = true;
         emit VestingScheduleBlocked(_beneficiary, _scheduleIndex);
     }
     /**
@@ -236,7 +235,7 @@ contract VestingContract is Ownable {
      */
     function unblockVestingSchedule(address _beneficiary, uint256 _scheduleIndex) external onlyOwner {
         require(_scheduleIndex < vestingSchedules[_beneficiary].length, "VestingContract: invalid schedule index");
-        vestingSchedules[_beneficiary][_scheduleIndex].block = false;
+        vestingSchedules[_beneficiary][_scheduleIndex].blocked = false;
         emit VestingScheduleUnblocked(_beneficiary, _scheduleIndex);
     }
 }
