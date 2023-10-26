@@ -18,4 +18,7 @@ npx hardhat blockVesting --contratovesting [vesting_address] --wallet [address] 
 
 # desbloqueamos un vesting
 npx hardhat unblockVesting --contratovesting [vesting_address] --wallet [address] --num 1 --network [network]
+
+# verificamos contrato de vesting
+npx hardhat verify --network mumbai [vesting_address] [token_address]
 ```

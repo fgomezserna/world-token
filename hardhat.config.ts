@@ -51,7 +51,9 @@ const config: HardhatUserConfig = {
       chainId: 80001,
       url: process.env.ETH_MUMBAI_URL || "",
       accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        process.env.PRIVATE_KEY_MUMBAY !== undefined
+          ? [process.env.PRIVATE_KEY_MUMBAY]
+          : [],
       gasPrice: NETWORK_GAS_PRICE["mumbai"] || "auto",
     },
     polygon: {
@@ -120,8 +122,12 @@ task("scheludeVesting", "Despliega el contrato vesting")
   .addParam("amount", "La cantidad de tokens a asignar")
   .addParam("starttime", "El tiempo de inicio del vesting")
   .addParam("duration", "La duración del vesting")
-  .addParam("percenttostart", "El porcentaje de tokens a liberar al inicio")
-  .addParam("cliff", "El periodo de cliff en segundos")
+  .addOptionalParam(
+    "percenttostart",
+    "El porcentaje de tokens a liberar al inicio"
+  )
+  .addOptionalParam("cliff", "El periodo de cliff en segundos")
+  .addOptionalParam("durationunits", "The unit of duration", "Months")
   .setAction(async function (taskArgs) {
     const deployScript = await import("./scripts/scheludeVesting");
 
@@ -165,6 +171,14 @@ task("unblockVesting", "Despliega el contrato vesting")
     const deployScript = await import("./scripts/unblockVesting");
 
     await deployScript.main(taskArgs);
+  });
+task("scheludeVestings", "Despliega el contrato vesting")
+  .addParam("contratovesting", "La dirección del contrato de vesting")
+  .addParam("filepath", "La ruta del archivo con los vestings")
+  .setAction(async function (taskArgs, hre) {
+    const deployScript = await import("./scripts/scheludeVestings");
+
+    await deployScript.main(taskArgs, hre);
   });
 
 export default config;

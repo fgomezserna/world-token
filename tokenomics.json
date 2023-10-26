@@ -1,0 +1,56 @@
+[
+  {
+    "wallet": "0x0143b2e85C1D47cf2ef3Af46A8C41239BF99d22b",
+    "amount": "2310000",
+    "starttime": "2023-11-26T00:00:00.000Z",
+    "duration": 48,
+    "percenttostart": 0,
+    "cliff": null,
+    "durationunits": "Months"
+  },
+  {
+    "wallet": "0x0143b2e85C1D47cf2ef3Af46A8C41239BF99d22b",
+    "amount": "3150000",
+    "starttime": "2023-11-26T00:00:00.000Z",
+    "duration": 48,
+    "percenttostart": 0,
+    "cliff": null,
+    "durationunits": "Months"
+  },
+  {
+    "wallet": "0x0143b2e85C1D47cf2ef3Af46A8C41239BF99d22b",
+    "amount": "3150000",
+    "starttime": "2023-11-26T00:00:00.000Z",
+    "duration": 24,
+    "percenttostart": 0,
+    "cliff": "2024-05-26T00:00:00.000Z",
+    "durationunits": "Months"
+  },
+  {
+    "wallet": "0x0143b2e85C1D47cf2ef3Af46A8C41239BF99d22b",
+    "amount": "2520000",
+    "starttime": "2023-11-26T00:00:00.000Z",
+    "duration": 36,
+    "percenttostart": 0,
+    "cliff": null,
+    "durationunits": "Months"
+  },
+  {
+    "wallet": "0x0143b2e85C1D47cf2ef3Af46A8C41239BF99d22b",
+    "amount": "1470000",
+    "starttime": "2023-11-26T00:00:00.000Z",
+    "duration": 24,
+    "percenttostart": 0,
+    "cliff": "2024-05-26T00:00:00.000Z",
+    "durationunits": "Months"
+  },
+  {
+    "wallet": "0x0143b2e85C1D47cf2ef3Af46A8C41239BF99d22b",
+    "amount": "1050000",
+    "starttime": "2023-11-26T00:00:00.000Z",
+    "duration": 36,
+    "percenttostart": 0,
+    "cliff": null,
+    "durationunits": "Months"
+  }
+]
